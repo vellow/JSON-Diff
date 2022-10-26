@@ -1,17 +1,26 @@
-import has from 'lodash/has';
-import get from 'lodash/get';
-import isEqual from 'lodash/isEqual';
+import has from "lodash/has";
+import get from "lodash/get";
+import isEqual from "lodash/isEqual";
 
-import { JsonInsert, JsonSet, IComparator, IJSONChangeUpdate } from '../src/jsonDiff';
-import { ListDiff, deconstructChangesInListUpdateChanges } from '../src/listDiff';
+import {
+  JsonInsert,
+  JsonSet,
+  IComparator,
+  IJSONChangeUpdate,
+} from "../src/jsonDiff";
+import {
+  ListDiff,
+  deconstructChangesInListUpdateChanges,
+} from "../src/listDiff";
+import { JSONValue } from "../src/types";
 
-describe('list diff basic function', () => {
-  it('should deconstruct changes', () => {
+describe("list diff basic function", () => {
+  it("should deconstruct changes", () => {
     const changes1: IJSONChangeUpdate[] = [
       {
-        path: '[0].name',
-        preValue: 'a',
-        value: 'x',
+        path: "[0].name",
+        preValue: "a",
+        value: "x",
       },
     ];
 
@@ -23,25 +32,25 @@ describe('list diff basic function', () => {
 
     const changes2: IJSONChangeUpdate[] = [
       {
-        path: '[0]',
+        path: "[0]",
         preValue: {
           id: 1,
-          name: 'a',
+          name: "a",
         },
         value: {
           id: 1,
-          name: 'x', // name change from 'a' -> 'x'
+          name: "x", // name change from 'a' -> 'x'
         },
       },
       {
-        path: '[1]',
+        path: "[1]",
         preValue: {
           id: 2,
-          name: 'b',
+          name: "b",
         },
         value: {
           id: 2,
-          name: 'x', // name change from 'b' -> 'x'
+          name: "x", // name change from 'b' -> 'x'
         },
       },
     ];
@@ -50,19 +59,19 @@ describe('list diff basic function', () => {
     expect(dechanges2.adds.length).toEqual(0);
     expect(dechanges2.deletes.length).toEqual(0);
     expect(dechanges2.updates.length).toEqual(2);
-    expect(dechanges2.updates[0].path).toEqual('[0].name');
-    expect(dechanges2.updates[0].preValue).toEqual('a');
-    expect(dechanges2.updates[0].value).toEqual('x');
-    expect(dechanges2.updates[1].path).toEqual('[1].name');
-    expect(dechanges2.updates[1].preValue).toEqual('b');
-    expect(dechanges2.updates[1].value).toEqual('x');
+    expect(dechanges2.updates[0].path).toEqual("[0].name");
+    expect(dechanges2.updates[0].preValue).toEqual("a");
+    expect(dechanges2.updates[0].value).toEqual("x");
+    expect(dechanges2.updates[1].path).toEqual("[1].name");
+    expect(dechanges2.updates[1].preValue).toEqual("b");
+    expect(dechanges2.updates[1].value).toEqual("x");
 
     const changes3: IJSONChangeUpdate[] = [
       {
-        path: '[0]',
+        path: "[0]",
         preValue: {
           id: 1,
-          name: 'a', // deleted
+          name: "a", // deleted
         },
         value: {
           id: 1,
@@ -74,19 +83,19 @@ describe('list diff basic function', () => {
     expect(dechanges3.updates.length).toEqual(0);
     expect(dechanges3.adds.length).toEqual(0);
     expect(dechanges3.deletes.length).toEqual(1);
-    expect(dechanges3.deletes[0].path).toEqual('[0].name');
+    expect(dechanges3.deletes[0].path).toEqual("[0].name");
 
     const changes4: IJSONChangeUpdate[] = [
       {
-        path: '[0]',
+        path: "[0]",
         preValue: {
           id: 1,
-          name: 'a', // updated
+          name: "a", // updated
         },
         value: {
           id: 1,
-          name: 'x',
-          desc: 'ha', // add
+          name: "x",
+          desc: "ha", // add
         },
       },
     ];
@@ -95,20 +104,20 @@ describe('list diff basic function', () => {
     expect(dechanges4.updates.length).toEqual(1);
     expect(dechanges4.adds.length).toEqual(1);
     expect(dechanges4.deletes.length).toEqual(0);
-    expect(dechanges4.updates[0].path).toEqual('[0].name');
-    expect(dechanges4.updates[0].preValue).toEqual('a');
-    expect(dechanges4.updates[0].value).toEqual('x');
-    expect(dechanges4.adds[0].path).toEqual('[0].desc');
-    expect(dechanges4.adds[0].value).toEqual('ha');
+    expect(dechanges4.updates[0].path).toEqual("[0].name");
+    expect(dechanges4.updates[0].preValue).toEqual("a");
+    expect(dechanges4.updates[0].value).toEqual("x");
+    expect(dechanges4.adds[0].path).toEqual("[0].desc");
+    expect(dechanges4.adds[0].value).toEqual("ha");
 
     const changes5: IJSONChangeUpdate[] = [
       {
-        path: '[0]',
+        path: "[0]",
         preValue: {
           id: 1,
-          name: 'a',
+          name: "a",
         },
-        value: 'x',
+        value: "x",
       },
     ];
 
@@ -120,8 +129,8 @@ describe('list diff basic function', () => {
   });
 });
 
-describe('list diff', () => {
-  it('get changes in number list', () => {
+describe("list diff", () => {
+  it("get changes in number list", () => {
     // update
     const changes1 = ListDiff([1, 2, 3], [1, 2, 4]);
     expect(changes1.updates.length).toEqual(1);
@@ -173,118 +182,118 @@ describe('list diff', () => {
     expect(changes42.adds.length).toEqual(0);
   });
 
-  it('get changes in object list', () => {
+  it("get changes in object list", () => {
     const base = [
-      { id: 1, name: 'a' },
-      { id: 2, name: 'b' },
-      { id: 3, name: 'c' },
+      { id: 1, name: "a" },
+      { id: 2, name: "b" },
+      { id: 3, name: "c" },
     ];
 
     // insert at list start
     const list1 = JsonInsert(base, [
       {
-        path: '[0]',
-        value: { id: 0, name: 'x' },
+        path: "[0]",
+        value: { id: 0, name: "x" },
       },
-    ]);
+    ]) as JSONValue[];
     const changes1 = ListDiff(base, list1);
     expect(changes1.adds.length).toEqual(1);
     expect(changes1.deletes.length).toEqual(0);
     expect(changes1.updates.length).toEqual(0);
-    expect(changes1.adds[0].path).toEqual('[0]');
+    expect(changes1.adds[0].path).toEqual("[0]");
 
     // insert at list middle
     const list11 = JsonInsert(base, [
       {
-        path: '[1]',
-        value: { id: 0, name: 'x' },
+        path: "[1]",
+        value: { id: 0, name: "x" },
       },
-    ]);
+    ]) as JSONValue[];
     const changes11 = ListDiff(base, list11);
     expect(changes11.adds.length).toEqual(1);
     expect(changes11.deletes.length).toEqual(0);
     expect(changes11.updates.length).toEqual(0);
-    expect(changes11.adds[0].path).toEqual('[1]');
+    expect(changes11.adds[0].path).toEqual("[1]");
 
     // insert at list end
     const list12 = JsonInsert(base, [
       {
-        path: '[3]',
-        value: { id: 0, name: 'x' },
+        path: "[3]",
+        value: { id: 0, name: "x" },
       },
-    ]);
+    ]) as JSONValue[];
     const changes12 = ListDiff(base, list12);
     expect(changes12.adds.length).toEqual(1);
     expect(changes12.deletes.length).toEqual(0);
     expect(changes12.updates.length).toEqual(0);
-    expect(changes12.adds[0].path).toEqual('[3]');
+    expect(changes12.adds[0].path).toEqual("[3]");
 
     // update list item
     const list2 = JsonSet(base, [
       {
-        path: '[1]',
-        value: { id: 2, name: 'x' },
+        path: "[1]",
+        value: { id: 2, name: "x" },
       },
-    ]);
+    ]) as JSONValue[];
     const changes2 = ListDiff(base, list2);
     expect(changes2.adds.length).toEqual(0);
     expect(changes2.deletes.length).toEqual(0);
     expect(changes2.updates.length).toEqual(1);
-    expect(changes2.updates[0].path).toEqual('[1].name');
+    expect(changes2.updates[0].path).toEqual("[1].name");
     expect(changes2.updates[0].preValue).toEqual(base[1].name);
-    expect(changes2.updates[0].value).toEqual(list2[1].name);
+    expect(changes2.updates[0].value).toEqual(get(list2, "[1].name"));
 
     const list21 = JsonSet(base, [
       {
-        path: '[0]',
-        value: { id: 1, name: 'x1' }, // name change from 'a' -> 'x1'
+        path: "[0]",
+        value: { id: 1, name: "x1" }, // name change from 'a' -> 'x1'
       },
       {
-        path: '[1].name',
-        value: 'x2', // name change from 'b' -> 'x2'
+        path: "[1].name",
+        value: "x2", // name change from 'b' -> 'x2'
       },
-    ]);
+    ]) as JSONValue[];
     const changes21 = ListDiff(base, list21);
     expect(changes21.adds.length).toEqual(0);
     expect(changes21.deletes.length).toEqual(0);
     expect(changes21.updates.length).toEqual(2);
-    expect(changes21.updates[0].path).toEqual('[0].name');
+    expect(changes21.updates[0].path).toEqual("[0].name");
     expect(changes21.updates[0].preValue).toEqual(base[0].name);
-    expect(changes21.updates[0].value).toEqual(list21[0].name);
-    expect(changes21.updates[1].path).toEqual('[1].name');
+    expect(changes21.updates[0].value).toEqual(get(list21, "[0].name"));
+    expect(changes21.updates[1].path).toEqual("[1].name");
     expect(changes21.updates[1].preValue).toEqual(base[1].name);
-    expect(changes21.updates[1].value).toEqual(list21[1].name);
+    expect(changes21.updates[1].value).toEqual(get(list21, "[1].name"));
 
     // multiple changes, add + update
     let list3 = JsonSet(base, [
       {
-        path: '[1]',
-        value: { id: 2, name: 'x1' }, // name change from 'a' -> 'x1'
+        path: "[1]",
+        value: { id: 2, name: "x1" }, // name change from 'a' -> 'x1'
       },
     ]);
     list3 = JsonInsert(list3, [
       {
-        path: '[3]',
-        value: { id: 0, name: 'x3' },
+        path: "[3]",
+        value: { id: 0, name: "x3" },
       },
-    ]);
+    ]) as JSONValue[];
     const changes3 = ListDiff(base, list3);
     expect(changes3.adds.length).toEqual(1);
     expect(changes3.deletes.length).toEqual(0);
     expect(changes3.updates.length).toEqual(1);
-    expect(changes3.updates[0].path).toEqual('[1].name');
+    expect(changes3.updates[0].path).toEqual("[1].name");
     expect(changes3.updates[0].preValue).toEqual(base[1].name);
-    expect(changes3.updates[0].value).toEqual(list3[1].name);
-    expect(changes3.adds[0].path).toEqual('[3]');
+    expect(changes3.updates[0].value).toEqual(get(list3, "[1].name"));
+    expect(changes3.adds[0].path).toEqual("[3]");
     expect(changes3.adds[0].value).toEqual(list3[3]);
   });
 
-  it('get changes in object list with a comparator', () => {
+  it("get changes in object list with a comparator", () => {
     // A customize comparator, if two object has same id, they are same.
-    const myComparator: IComparator = (item1: any, item2: any) => {
+    const myComparator: IComparator = (item1: JSONValue, item2: JSONValue) => {
       let isChange;
-      if (has(item1, 'id') && has(item2, 'id')) {
-        isChange = !isEqual(get(item1, 'id'), get(item2, 'id'));
+      if (has(item1, "id") && has(item2, "id")) {
+        isChange = !isEqual(get(item1, "id"), get(item2, "id"));
       } else {
         isChange = isEqual(item1, item2);
       }
@@ -294,57 +303,57 @@ describe('list diff', () => {
     };
 
     const base = [
-      { id: 1, name: 'a' },
-      { id: 2, name: 'b' },
-      { id: 3, name: 'c' },
+      { id: 1, name: "a" },
+      { id: 2, name: "b" },
+      { id: 3, name: "c" },
     ];
 
     // insert at list start
     const list1 = JsonInsert(base, [
       {
-        path: '[0]',
-        value: { id: 0, name: 'x' },
+        path: "[0]",
+        value: { id: 0, name: "x" },
       },
-    ]);
+    ]) as JSONValue[];
     const changes1 = ListDiff(base, list1, myComparator);
     expect(changes1.adds.length).toEqual(1);
     expect(changes1.deletes.length).toEqual(0);
     expect(changes1.updates.length).toEqual(0);
-    expect(changes1.adds[0].path).toEqual('[0]');
+    expect(changes1.adds[0].path).toEqual("[0]");
 
     // insert at list middle
     const list11 = JsonInsert(base, [
       {
-        path: '[1]',
-        value: { id: 0, name: 'x' },
+        path: "[1]",
+        value: { id: 0, name: "x" },
       },
-    ]);
+    ]) as JSONValue[];
     const changes11 = ListDiff(base, list11, myComparator);
     expect(changes11.adds.length).toEqual(1);
     expect(changes11.deletes.length).toEqual(0);
     expect(changes11.updates.length).toEqual(0);
-    expect(changes11.adds[0].path).toEqual('[1]');
+    expect(changes11.adds[0].path).toEqual("[1]");
 
     // insert at list end
     const list12 = JsonInsert(base, [
       {
-        path: '[3]',
-        value: { id: 0, name: 'x' },
+        path: "[3]",
+        value: { id: 0, name: "x" },
       },
-    ]);
+    ]) as JSONValue[];
     const changes12 = ListDiff(base, list12, myComparator);
     expect(changes12.adds.length).toEqual(1);
     expect(changes12.deletes.length).toEqual(0);
     expect(changes12.updates.length).toEqual(0);
-    expect(changes12.adds[0].path).toEqual('[3]');
+    expect(changes12.adds[0].path).toEqual("[3]");
 
     // update list item
     const list2 = JsonSet(base, [
       {
-        path: '[1]',
-        value: { id: 2, name: 'x' }, // update name
+        path: "[1]",
+        value: { id: 2, name: "x" }, // update name
       },
-    ]);
+    ]) as JSONValue[];
     const changes2 = ListDiff(base, list2, myComparator);
     expect(changes2.adds.length).toEqual(0);
     expect(changes2.deletes.length).toEqual(0);
@@ -352,47 +361,48 @@ describe('list diff', () => {
 
     const list21 = JsonSet(base, [
       {
-        path: '[0]',
-        value: { id: 11, name: 'x1' }, // update id
+        path: "[0]",
+        value: { id: 11, name: "x1" }, // update id
       },
       {
-        path: '[1]',
-        value: { id: 2, name: 'x2' }, // only update name
+        path: "[1]",
+        value: { id: 2, name: "x2" }, // only update name
       },
-    ]);
+    ]) as JSONValue[];
     const changes21 = ListDiff(base, list21, myComparator);
     expect(changes21.adds.length).toEqual(0);
     expect(changes21.deletes.length).toEqual(0);
     expect(changes21.updates.length).toEqual(1);
-    expect(changes21.updates[0].path).toEqual('[0]');
+    expect(changes21.updates[0].path).toEqual("[0]");
     expect(changes21.updates[0].preValue).toEqual(base[0]);
     expect(changes21.updates[0].value).toEqual(list21[0]);
 
     // multiple changes, add + update
     let list3 = JsonSet(base, [
       {
-        path: '[0]',
-        value: { id: 1, name: 'x' }, // name 'a'->'x'
+        path: "[0]",
+        value: { id: 1, name: "x" }, // name 'a'->'x'
       },
       {
-        path: '[1]',
-        value: { id: 22, name: 'x' }, // name 'b'->'x', id 2->22
+        path: "[1]",
+        value: { id: 22, name: "x" }, // name 'b'->'x', id 2->22
       },
     ]);
     list3 = JsonInsert(list3, [
       {
-        path: '[3]',
-        value: { id: 4, name: 'x3' },
+        path: "[3]",
+        value: { id: 4, name: "x3" },
       },
-    ]);
+    ]) as JSONValue[];
+
     const changes3 = ListDiff(base, list3, myComparator);
     expect(changes3.adds.length).toEqual(1);
     expect(changes3.deletes.length).toEqual(0);
     expect(changes3.updates.length).toEqual(1);
-    expect(changes3.updates[0].path).toEqual('[1]');
+    expect(changes3.updates[0].path).toEqual("[1]");
     expect(changes3.updates[0].preValue).toEqual(base[1]);
     expect(changes3.updates[0].value).toEqual(list3[1]);
-    expect(changes3.adds[0].path).toEqual('[3]');
+    expect(changes3.adds[0].path).toEqual("[3]");
     expect(changes3.adds[0].value).toEqual(list3[3]);
   });
 });

@@ -11,6 +11,25 @@ on:
     
 jobs:
   ci:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2.5.0
+      - name: Setup Node.js environment
+        uses: actions/setup-node@v3.5.1
+        with:
+          node-version: 16.17.1
+      - name: npm install
+        run: npm install
+      - name: npm run build
+        run: npm run build
+  ci:
     name: Unit Tests
     runs-on: ubuntu-latest
     timeout-minutes: 45
@@ -27,6 +46,8 @@ jobs:
           node-version: 16.17.1
       - name: npm install
         run: npm install
+      - name: npm run lint
+        run: npm run lint
       - name: npm run test
         run: npm run test
       - name: Coveralls GitHub Action
