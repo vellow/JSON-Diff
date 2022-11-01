@@ -25,14 +25,17 @@ jobs:
         uses: actions/setup-node@v3.5.1
         with:
           node-version: 16.17.1
-      - name: npm install
-        run: npm install
-      - name: npm run build
-        run: npm run build
-      - name: npm run lint
-        run: npm run lint
-      - name: npm run test
-        run: npm run test
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v2.2.4
+        with:
+          version: 7.14.1
+          run_install: true
+      - name: pnpm build
+        run: pnpm build
+      - name: pnpm lint
+        run: pnpm lint
+      - name: pnpm test
+        run: pnpm test
       - name: Coveralls GitHub Action
         uses: coverallsapp/github-action@1.1.3
         with:
